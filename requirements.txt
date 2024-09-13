@@ -1,0 +1,10 @@
+gradio
+spaces
+accelerate
+transformers==4.42.4
+sentencepiece
+git+https://github.com/Gothos/diffusers.git@flux-inpaint
+huggingface_hub
+peft
+gradio_imageslider
+requests
