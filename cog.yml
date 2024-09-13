@@ -10,6 +10,7 @@ build:
     - "peft"
     - "pillow"
     - "numpy"
+    - "requests"
     - "git+https://github.com/Gothos/diffusers.git@flux-inpaint"
 
 predict: "predict.py:Predictor"
