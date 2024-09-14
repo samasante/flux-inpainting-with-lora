@@ -49,3 +49,7 @@ To deploy this model to Replicate:
 ## Acknowledgements
 
 This project is based on the work by jiuface on Hugging Face Spaces.
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details.
