@@ -32,6 +32,8 @@ class Predictor(BasePredictor):
         seed: int = Input(description="Random seed", default=42, ge=0),
         strength: float = Input(description="Strength of the inpainting", default=0.85, ge=0, le=1),
         num_inference_steps: int = Input(description="Number of inference steps", default=28, ge=1, le=100),
+        blur_mask: bool = Input(description="Apply blur to mask", default=False),
+        blur_factor: int = Input(description="Blur factor for mask", default=33, ge=0, le=50),
     ) -> Path:
         try:
             # Authenticate with Hugging Face
@@ -51,6 +53,9 @@ class Predictor(BasePredictor):
             width, height = self.resize_image_dimensions(image.size)
             image = image.resize((width, height), Image.LANCZOS)
             mask = mask.resize((width, height), Image.LANCZOS)
+
+            if blur_mask:
+                mask = self.pipe.mask_processor.blur(mask, blur_factor=blur_factor)
 
             self.pipe.load_lora_weights(lora_path, weight_name=lora_weights)
             logger.info(f"LoRA weights loaded from {lora_path}")
@@ -85,9 +90,14 @@ class Predictor(BasePredictor):
 
     def resize_image_dimensions(self, original_resolution_wh: Tuple[int, int], maximum_dimension: int = 1024) -> Tuple[int, int]:
         width, height = original_resolution_wh
-        scaling_factor = maximum_dimension / max(width, height)
+        if width > height:
+            scaling_factor = maximum_dimension / width
+        else:
+            scaling_factor = maximum_dimension / height
+
         new_width = int(width * scaling_factor)
         new_height = int(height * scaling_factor)
+
         return new_width - (new_width % 32), new_height - (new_height % 32)
 
     def load_image(self, image_path: Path) -> Image.Image:
